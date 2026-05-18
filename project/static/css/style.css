@@ -1,0 +1,253 @@
+:root {
+    --primary: #2E7D32;
+    --primary-hover: #1B5E20;
+    --bg: #ffffff;
+    --text-main: #111827;
+    --text-secondary: #6B7280;
+    --border: #E5E7EB;
+}
+
+body {
+    background-color: #f5f7f6;
+    color: var(--text-main);
+}
+
+.custom-btn {
+    background-color: var(--primary);
+    border: none;
+    border-radius: 8px;
+}
+
+.custom-btn:hover {
+    background-color: var(--primary-hover);
+}
+
+.card {
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    transition: 0.2s ease;
+    background-color: #FFFFFF;
+    border: 1px solid #E5E7EB;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+}
+
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
+.navbar {
+    background-color: #FFFFFF;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.nav-item {
+    transition: 0.2s ease;
+}
+
+.nav-item:hover {
+    transform: translateY(-2px);
+}
+
+.carousel-item img {
+    height: 400px;
+    object-fit: cover;
+}
+
+.carousel-item {
+    position: relative;
+}
+
+#homeCarousel .carousel-item::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 1;
+}
+
+.carousel-caption {
+    z-index: 2;
+}
+
+.carousel-control-next-icon {
+    filter: invert(1);
+}
+
+.carousel-control-prev-icon {
+    filter: invert(1);
+}
+
+#enquiry {
+    background-image: url('../img/pexels-cottonbro-5158945.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+#login,
+#signup {
+    background-image: url('../img/pexels-cottonbro-4778621.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+#login-card,
+#signup-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.form-card {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 767px) {
+    .row.border {
+        border: none !important;
+
+    }
+
+    .border-start {
+        border-left: none !important;
+    }
+}
+
+
+.property-card {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.property-desc {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #4b5563;
+}
+
+.section-box {
+    background: #f9fafb;
+    border-radius: 12px;
+}
+
+.thumbnail-img {
+    cursor: pointer;
+}
+
+@media (max-width: 576px) {
+    .thumbnail-img {
+        height: 60px;
+        object-fit: cover;
+    }
+}
+.thumbnail-img:hover {
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+.thumbnail-img.active {
+    opacity: 1;
+    border: 2px solid #2E7D32;
+}
+
+
+@media (max-width: 576px) {
+    .property-card {
+        padding: 16px !important;
+    }
+
+    .property-desc {
+        font-size: 14px;
+    }
+}
+
+.progress {
+    border-radius: 50px;
+    overflow: hidden;
+}
+
+.btn-primary {
+    border-radius: 50px;
+    font-weight: 500;
+}
+
+#property_details{
+    background-image: url('../img/pexels-thomas-plets-1139798-5403840.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+.property-card {
+    background: rgba(255, 255, 255, 0.1); 
+    backdrop-filter: blur(12px); 
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.section-box {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(8px);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.progress {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+#list-property {
+    background-image: url('../img/pexels-thomas-plets-1139798-5403840.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+#bookmark-button {
+    border: 1px solid rgba(255, 255, 255, 255);
+    transition: 0.2s ease;
+}
+
+#bookmark-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+#enquiry-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+#list-property-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+#footer {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+#header {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    font-weight: 500;
+}
+
