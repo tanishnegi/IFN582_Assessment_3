@@ -12,6 +12,7 @@ def index():
     preferences = get_preferences()
     user_preferences = []
     if session.get("logged_in") and session["user"]["role"] == "buyer":
+        form.sort_by.choices.append(("compatibility", "Sort by - Compatibility"))
         user_preferences = get_user_preferences(session["user"]["id"])
         for property in properties:
             property.compatibility = calculate_compatibility(property.id,session["user"]["id"])
@@ -20,7 +21,10 @@ def index():
             elif property.compatibility >= 50:
                 property.badge = "warning"
             else:
-                property.badge = "danger"    
+                property.badge = "danger"
+        if form.sort_by.data == "compatibility":
+            properties.sort(key=lambda x: x.compatibility,reverse=True)
+        
     return render_template('home.html', form=form, properties=properties, preferences=preferences, user_preferences=user_preferences)
 
 
@@ -35,9 +39,12 @@ def search():
     else:
         properties = get_properties()
     if session.get("logged_in") and session["user"]["role"] == "buyer":
+        form.sort_by.choices.append(("compatibility", "Sort by - Compatibility"))
         user_preferences = get_user_preferences(session["user"]["id"])
         for property in properties:
             property.compatibility = calculate_compatibility(property.id,session["user"]["id"])
+        if form.sort_by.data == "compatibility":
+            properties.sort(key=lambda x: x.compatibility,reverse=True)
     preferences = get_preferences()
     return render_template(
         'home.html',
