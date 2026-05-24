@@ -1,0 +1,148 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Listings
+{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mb-4">
+            <div>
+                <h1 class="fw-bold">{% if role == 'admin' %}All Listings{% else %}My Listings{% endif %}</h1>
+                <p class="text-muted mb-0">Create, edit, and remove listings you are allowed to manage.</p>
+            </div>
+            <a href="{{ url_for('main.create_property_listing') }}" class="btn btn-dark rounded-pill px-4">Create Listing</a>
+        </div>
+
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-4">
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Listing</th>
+                                {% if role == 'admin' %}
+                                <th>Seller</th>
+                                {% endif %}
+                                <th>Price</th>
+                                <th>Location</th>
+                                <th>Enquiries</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for property in properties %}
+                            <tr>
+                                <td>{{ property.title }}</td>
+                                {% if role == 'admin' %}
+                                <td>{{ property.seller_firstname }} {{ property.seller_lastname }}</td>
+                                {% endif %}
+                                <td>${{ property.price }}/week</td>
+                                <td>{{ property.suburb }}, {{ property.city }}</td>
+                                <td>{{ property.enquiry_count }}</td>
+                                <td class="text-end">
+                                    <a href="{{ url_for('main.edit_property_listing', property_id=property.id) }}" class="btn btn-sm btn-outline-dark rounded-pill me-2">Edit</a>
+                                    <form method="POST" action="{{ url_for('main.remove_property_listing', property_id=property.id) }}" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="{{ 6 if role == 'admin' else 5 }}" class="text-center text-muted py-4">No listings available.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <h4 class="card-title mb-3">Related Enquiries</h4>
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Property</th>
+                                <th>Buyer</th>
+                                <th>Subject</th>
+                                <th>Message</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for enquiry in interactions %}
+                            <tr>
+                                <td>{{ enquiry.property_title }}</td>
+                                <td>{{ enquiry.buyer_firstname }} {{ enquiry.buyer_lastname }}</td>
+                                <td>{{ enquiry.subject }}</td>
+                                <td class="text-muted">{{ enquiry.message[:80] }}{% if enquiry.message|length > 80 %}...{% endif %}</td>
+                                <td>{{ enquiry.created_at }}</td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">No enquiries yet.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0 mt-4">
+            <div class="card-body p-4">
+                <h4 class="card-title mb-3">Related Offers</h4>
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Property</th>
+                                <th>Buyer</th>
+                                <th>Offer</th>
+                                <th>Status</th>
+                                <th class="text-end">Actions</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for offer in offers %}
+                            <tr>
+                                <td>{{ offer.property_title }}</td>
+                                <td>{{ offer.buyer_firstname }} {{ offer.buyer_lastname }}</td>
+                                <td>${{ "%.2f"|format(offer.offered_price) }}</td>
+                                <td>
+                                    <span class="badge {% if offer.status == 'accepted' %}bg-success{% elif offer.status == 'rejected' %}bg-danger{% else %}bg-warning text-dark{% endif %}">
+                                        {{ offer.status }}
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    {% if offer.status == 'pending' %}
+                                    <form method="POST" action="{{ url_for('main.accept_offer', offer_id=offer.id) }}" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-outline-success rounded-pill me-2">Accept</button>
+                                    </form>
+                                    <form method="POST" action="{{ url_for('main.reject_offer', offer_id=offer.id) }}" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill">Reject</button>
+                                    </form>
+                                    {% else %}
+                                    <span class="text-muted small">No actions</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ offer.created_at }}</td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-4">No offers yet.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

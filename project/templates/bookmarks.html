@@ -1,0 +1,75 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Bookmarked Properties
+{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="mb-4">
+            <h1 class="fw-bold">Saved / Bookmarked Properties</h1>
+            <p class="text-muted mb-0">Only you can see and manage this list.</p>
+        </div>
+
+        {% if bookmarks %}
+        <div class="row g-4">
+            {% for bookmark in bookmarks %}
+            <div class="col-12 col-lg-6">
+                <div class="card shadow-sm border-0 h-100 overflow-hidden">
+                    {% if bookmark.image %}
+                    <img src="{{ url_for('static', filename=bookmark.image) }}" class="card-img-top" alt="{{ bookmark.title }}" width="400" height="250">
+                    {% endif %}
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
+                            <div>
+                                <h4 class="card-title mb-1">{{ bookmark.title }}</h4>
+                                <p class="text-muted mb-0">{{ bookmark.suburb }}, {{ bookmark.city }}, {{ bookmark.postcode }}</p>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge text-bg-dark">${{ bookmark.price }}/week</span>
+                            </div>
+                        </div>
+
+                        <p class="small text-muted mb-3">
+                            {{ bookmark.property_type }} • Saved on {{ bookmark.bookmarked_at }}
+                        </p>
+
+                        <div class="mb-3 p-3 section-box">
+                            <p class="fw-semibold mb-1">Your note</p>
+                            {% if bookmark.note %}
+                            <p class="text-muted mb-0">{{ bookmark.note[:140] }}{% if bookmark.note|length > 140 %}...{% endif %}</p>
+                            {% else %}
+                            <p class="text-muted mb-0">No note added yet.</p>
+                            {% endif %}
+                        </div>
+
+                        <form method="POST" action="{{ url_for('main.save_property_bookmark', property_id=bookmark.property_id) }}">
+                            {{ bookmark_form.hidden_tag() }}
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Edit note</label>
+                                <textarea name="note" class="form-control" rows="3" placeholder="Add a short private note">{{ bookmark.note or '' }}</textarea>
+                            </div>
+                            <div class="d-flex flex-wrap gap-2">
+                                <a href="{{ url_for('main.property_details', property_id=bookmark.property_id) }}" class="btn btn-outline-dark rounded-pill">View Details</a>
+                                <button type="submit" class="btn btn-dark rounded-pill">Save Note</button>
+                                <button type="submit" formaction="{{ url_for('main.remove_property_bookmark', property_id=bookmark.property_id) }}" class="btn btn-outline-danger rounded-pill">Remove</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-5 text-center">
+                <h3 class="fw-bold mb-3">No saved properties yet</h3>
+                <p class="text-muted mb-4">When you bookmark a property, it will appear here with your private note.</p>
+                <a href="{{ url_for('main.index') }}" class="btn btn-dark rounded-pill px-4">Browse properties</a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
