@@ -79,3 +79,7 @@ class SearchForm(FlaskForm):
 )
 
     submit = SubmitField("Apply")
+
+class BookmarkNotesForm(FlaskForm):
+    """Form for editing notes on a bookmarked property."""
+    submit = SubmitField("Save Notes")
