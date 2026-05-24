@@ -1,5 +1,4 @@
 from flask import session
-
 from . import mysql
 from .models import Preference, Property, User
 
@@ -26,6 +25,25 @@ def create_user(form):
     ))
     mysql.connection.commit()
     cur.close()
+
+
+def delete_user(user_id):
+    cur = mysql.connection.cursor()
+    cur.execute("DELETE FROM users WHERE id = %s", (user_id,))
+    mysql.connection.commit()
+    cur.close()
+
+
+def get_users():
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT id, firstname, lastname, email, phone, role, created_at
+        FROM users
+        ORDER BY created_at DESC
+    """)
+    users = cur.fetchall()
+    cur.close()
+    return users
 
 
 def check_for_user(email, password):
@@ -78,12 +96,264 @@ def get_properties():
             row['bedrooms'],
             row['bathrooms'],
             row['occupants'],
+            row['seller_id'],
             row['image'],
             row['description'],
             row['created_at']
         )
         for row in properties
     ]
+
+
+def get_management_properties(owner_id=None):
+    query = """
+        SELECT
+            p.id,
+            p.seller_id,
+            p.title,
+            p.property_type,
+            p.price,
+            p.suburb,
+            p.city,
+            p.postcode,
+            p.bedrooms,
+            p.bathrooms,
+            p.occupants,
+            p.image,
+            p.description,
+            p.created_at,
+            u.firstname AS seller_firstname,
+            u.lastname AS seller_lastname,
+            COALESCE(ec.enquiry_count, 0) AS enquiry_count
+        FROM properties p
+        JOIN users u ON p.seller_id = u.id
+        LEFT JOIN (
+            SELECT property_id, COUNT(*) AS enquiry_count
+            FROM enquiries
+            GROUP BY property_id
+        ) ec ON p.id = ec.property_id
+    """
+    params = []
+
+    if owner_id is not None:
+        query += " WHERE p.seller_id = %s"
+        params.append(owner_id)
+
+    query += " ORDER BY p.created_at DESC"
+
+    cur = mysql.connection.cursor()
+    cur.execute(query, tuple(params))
+    properties = cur.fetchall()
+    cur.close()
+    return properties
+
+
+def get_property_interactions(owner_id=None):
+    query = """
+        SELECT
+            e.enquiry_id,
+            e.property_id,
+            e.subject,
+            e.message,
+            e.created_at,
+            p.title AS property_title,
+            u.firstname AS buyer_firstname,
+            u.lastname AS buyer_lastname,
+            u.email AS buyer_email
+        FROM enquiries e
+        JOIN properties p ON e.property_id = p.id
+        JOIN users u ON e.buyer_id = u.id
+    """
+    params = []
+
+    if owner_id is not None:
+        query += " WHERE p.seller_id = %s"
+        params.append(owner_id)
+
+    query += " ORDER BY e.created_at DESC"
+
+    cur = mysql.connection.cursor()
+    cur.execute(query, tuple(params))
+    interactions = cur.fetchall()
+    cur.close()
+    return interactions
+
+
+def get_user_enquiries(user_id):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT
+            e.enquiry_id,
+            e.property_id,
+            e.subject,
+            e.message,
+            e.created_at,
+            p.title AS property_title,
+            p.property_type,
+            p.price,
+            p.suburb,
+            p.city,
+            p.postcode,
+            p.image,
+            u.firstname AS seller_firstname,
+            u.lastname AS seller_lastname
+        FROM enquiries e
+        JOIN properties p ON e.property_id = p.id
+        JOIN users u ON p.seller_id = u.id
+        WHERE e.buyer_id = %s
+        ORDER BY e.created_at DESC
+    """, (user_id,))
+    enquiries = cur.fetchall()
+    cur.close()
+    return enquiries
+
+
+def get_user_offers(user_id):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT
+            o.id,
+            o.property_id,
+            o.offered_price,
+            o.status,
+            o.created_at,
+            p.title AS property_title,
+            p.property_type,
+            p.price,
+            p.suburb,
+            p.city,
+            p.postcode,
+            p.image,
+            u.firstname AS seller_firstname,
+            u.lastname AS seller_lastname
+        FROM offers o
+        JOIN properties p ON o.property_id = p.id
+        JOIN users u ON p.seller_id = u.id
+        WHERE o.buyer_id = %s
+        ORDER BY o.created_at DESC
+    """, (user_id,))
+    offers = cur.fetchall()
+    cur.close()
+    return offers
+
+
+def get_property_offers(owner_id=None):
+    query = """
+        SELECT
+            o.id,
+            o.property_id,
+            o.buyer_id,
+            o.offered_price,
+            o.status,
+            o.created_at,
+            p.title AS property_title,
+            u.firstname AS buyer_firstname,
+            u.lastname AS buyer_lastname,
+            u.email AS buyer_email
+        FROM offers o
+        JOIN properties p ON o.property_id = p.id
+        JOIN users u ON o.buyer_id = u.id
+    """
+    params = []
+
+    if owner_id is not None:
+        query += " WHERE p.seller_id = %s"
+        params.append(owner_id)
+
+    query += " ORDER BY o.created_at DESC"
+
+    cur = mysql.connection.cursor()
+    cur.execute(query, tuple(params))
+    offers = cur.fetchall()
+    cur.close()
+    return offers
+
+
+def create_property(form, seller_id):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        INSERT INTO properties (
+            seller_id,
+            title,
+            property_type,
+            price,
+            suburb,
+            city,
+            postcode,
+            bedrooms,
+            bathrooms,
+            occupants,
+            image,
+            description
+        )
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    """, (
+        seller_id,
+        form.title.data,
+        form.property_type.data,
+        form.price.data,
+        form.suburb.data,
+        form.city.data,
+        form.postcode.data,
+        form.bedrooms.data,
+        form.bathrooms.data,
+        form.occupants.data,
+        form.image.data,
+        form.description.data,
+    ))
+    mysql.connection.commit()
+    cur.close()
+
+
+def update_property(property_id, form):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        UPDATE properties
+        SET title = %s,
+            property_type = %s,
+            price = %s,
+            suburb = %s,
+            city = %s,
+            postcode = %s,
+            bedrooms = %s,
+            bathrooms = %s,
+            occupants = %s,
+            image = %s,
+            description = %s
+        WHERE id = %s
+    """, (
+        form.title.data,
+        form.property_type.data,
+        form.price.data,
+        form.suburb.data,
+        form.city.data,
+        form.postcode.data,
+        form.bedrooms.data,
+        form.bathrooms.data,
+        form.occupants.data,
+        form.image.data,
+        form.description.data,
+        property_id,
+    ))
+    mysql.connection.commit()
+    cur.close()
+
+
+def delete_property(property_id):
+    cur = mysql.connection.cursor()
+    cur.execute("DELETE FROM properties WHERE id = %s", (property_id,))
+    mysql.connection.commit()
+    cur.close()
+
+
+def get_property_owner(property_id):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT seller_id FROM properties WHERE id = %s", (property_id,))
+    row = cur.fetchone()
+    cur.close()
+    return row['seller_id'] if row else None
+
+
 def get_property_details(property_id):
     cur = mysql.connection.cursor()
     cur.execute("""
@@ -98,6 +368,7 @@ def get_property_details(property_id):
             p.bedrooms,
             p.bathrooms,
             p.occupants,
+            p.seller_id,
             p.image,
             p.description,
             p.created_at,
@@ -133,6 +404,7 @@ def get_property_details(property_id):
         first_row['bedrooms'],
         first_row['bathrooms'],
         first_row['occupants'],
+        first_row['seller_id'],
         first_row['image'],
         first_row['description'],
         first_row['created_at']
@@ -227,6 +499,7 @@ def search_properties(form, selected_preferences=None):
             row['bedrooms'],
             row['bathrooms'],
             row['occupants'],
+            row['seller_id'],
             row['image'],
             row['description'],
             row['created_at']
@@ -331,5 +604,125 @@ def create_enquiry(property_id, buyer_id, form):
         form.subject.data,
         form.message.data
     ))
+    mysql.connection.commit()
+    cur.close()
+
+
+def get_offer(user_id, property_id):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT id, buyer_id, property_id, offered_price, status, created_at
+        FROM offers
+        WHERE buyer_id = %s AND property_id = %s
+        ORDER BY created_at DESC, id DESC
+        LIMIT 1
+    """, (user_id, property_id))
+    row = cur.fetchone()
+    cur.close()
+    return row
+
+
+def create_offer(property_id, buyer_id, offered_price):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT id
+        FROM offers
+        WHERE buyer_id = %s AND property_id = %s
+        ORDER BY created_at DESC, id DESC
+        LIMIT 1
+    """, (buyer_id, property_id))
+    existing_offer = cur.fetchone()
+
+    if existing_offer:
+        cur.execute("""
+            UPDATE offers
+            SET offered_price = %s,
+                status = 'pending',
+                created_at = CURRENT_TIMESTAMP
+            WHERE id = %s
+        """, (offered_price, existing_offer['id']))
+    else:
+        cur.execute("""
+            INSERT INTO offers (buyer_id, property_id, offered_price, status)
+            VALUES (%s, %s, %s, 'pending')
+        """, (buyer_id, property_id, offered_price))
+
+    mysql.connection.commit()
+    cur.close()
+
+
+def update_offer_status(offer_id, status):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        UPDATE offers
+        SET status = %s
+        WHERE id = %s
+    """, (status, offer_id))
+    mysql.connection.commit()
+    cur.close()
+
+
+def get_bookmark(user_id, property_id):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT id, user_id, property_id, note, created_at
+        FROM bookmarks
+        WHERE user_id = %s AND property_id = %s
+    """, (user_id, property_id))
+    row = cur.fetchone()
+    cur.close()
+    return row
+
+
+def get_bookmarks(user_id):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT
+            b.id AS bookmark_id,
+            b.user_id,
+            b.property_id,
+            b.note,
+            b.created_at AS bookmarked_at,
+            p.title,
+            p.property_type,
+            p.price,
+            p.suburb,
+            p.city,
+            p.postcode,
+            p.image,
+            p.description,
+            p.seller_id,
+            u.firstname AS seller_firstname,
+            u.lastname AS seller_lastname
+        FROM bookmarks b
+        JOIN properties p ON b.property_id = p.id
+        JOIN users u ON p.seller_id = u.id
+        WHERE b.user_id = %s
+        ORDER BY b.created_at DESC
+    """, (user_id,))
+    bookmarks = cur.fetchall()
+    cur.close()
+    return bookmarks
+
+
+def save_bookmark(user_id, property_id, note):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        INSERT INTO bookmarks (user_id, property_id, note)
+        VALUES (%s, %s, %s)
+        ON DUPLICATE KEY UPDATE
+            note = VALUES(note),
+            created_at = CURRENT_TIMESTAMP
+    """, (user_id, property_id, note))
+    mysql.connection.commit()
+    cur.close()
+
+
+def remove_bookmark(user_id, property_id):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        DELETE FROM bookmarks
+        WHERE user_id = %s AND property_id = %s
+    """, (user_id, property_id))
     mysql.connection.commit()
     cur.close()

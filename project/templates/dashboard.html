@@ -1,0 +1,137 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Buyer Dashboard
+{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mb-4">
+            <div>
+                <h1 class="fw-bold">My Dashboard</h1>
+                <p class="text-muted mb-0">Manage your preferences, enquiries, and offers in one place.</p>
+            </div>
+            <a href="{{ url_for('main.index') }}" class="btn btn-dark rounded-pill px-4">Browse Properties</a>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-12 col-md-4">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body p-4">
+                        <p class="text-muted mb-1">Preferences</p>
+                        <h3 class="fw-bold mb-0">{{ user_preferences|length }}</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body p-4">
+                        <p class="text-muted mb-1">Enquiries</p>
+                        <h3 class="fw-bold mb-0">{{ enquiries|length }}</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body p-4">
+                        <p class="text-muted mb-1">Offers made</p>
+                        <h3 class="fw-bold mb-0">{{ offers|length }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+                    <div>
+                        <h4 class="card-title mb-1">Preferences</h4>
+                        <p class="text-muted mb-0">Choose the preferences that shape your recommendations.</p>
+                    </div>
+                </div>
+
+                <form method="POST" action="{{ url_for('main.save_preferences') }}">
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        {% for pref in preferences %}
+                        <input type="checkbox" class="btn-check" name="preferences" value="{{ pref.id }}" id="dashpref{{ pref.id }}" {% if pref.id in user_preferences %}checked{% endif %}>
+                        <label for="dashpref{{ pref.id }}" class="btn btn-outline-dark rounded-pill px-3">{{ pref.name }}</label>
+                        {% endfor %}
+                    </div>
+                    <button type="submit" class="btn btn-outline-primary rounded-pill px-4">Save Preferences</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-4">
+                <h4 class="card-title mb-3">My Enquiries</h4>
+                {% if enquiries %}
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Property</th>
+                                <th>Subject</th>
+                                <th>Seller</th>
+                                <th>Date</th>
+                                <th class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for enquiry in enquiries %}
+                            <tr>
+                                <td>{{ enquiry.property_title }}</td>
+                                <td>{{ enquiry.subject }}</td>
+                                <td>{{ enquiry.seller_firstname }} {{ enquiry.seller_lastname }}</td>
+                                <td>{{ enquiry.created_at }}</td>
+                                <td class="text-end"><a href="{{ url_for('main.property_details', property_id=enquiry.property_id) }}" class="btn btn-sm btn-outline-dark rounded-pill">View</a></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted mb-0">You have not sent any enquiries yet.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <h4 class="card-title mb-3">Offers Made</h4>
+                {% if offers %}
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Property</th>
+                                <th>Offer</th>
+                                <th>Status</th>
+                                <th>Seller</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for offer in offers %}
+                            <tr>
+                                <td>{{ offer.property_title }}</td>
+                                <td>${{ "%.2f"|format(offer.offered_price) }}</td>
+                                <td>
+                                    <span class="badge {% if offer.status == 'accepted' %}bg-success{% elif offer.status == 'rejected' %}bg-danger{% else %}bg-warning text-dark{% endif %}">{{ offer.status }}</span>
+                                </td>
+                                <td>{{ offer.seller_firstname }} {{ offer.seller_lastname }}</td>
+                                <td>{{ offer.created_at }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted mb-0">You have not made any offers yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

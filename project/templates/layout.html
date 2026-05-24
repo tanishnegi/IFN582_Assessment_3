@@ -36,26 +36,22 @@
                             {% set user = session.get("user") %}
                             {% if user and user.get("role") == "buyer" %}
                             <li class="nav-item ms-3 ms-lg-0 ">
-                                <a class="nav-link text-black text-center" href="./bookmarks.html">Bookmarks</a>
+                                <a class="nav-link text-black text-center" href="{{ url_for('main.dashboard') }}">Dashboard</a>
                             </li>
                             <li class="nav-item ms-3 ms-lg-0 ">
-                                <a class="nav-link text-black text-center" href="./enquiries.html">Enquiries</a>
-                            </li>
-                            <li class="nav-item ms-3 ms-lg-0 ">
-                                <button class="nav-link text-black text-center" data-bs-toggle="modal"
-                                    data-bs-target="#preferencesModal">
-                                    My Preferences
-                                </button>
+                                <a class="nav-link text-black text-center" href="{{ url_for('main.bookmarks') }}">Bookmarks</a>
                             </li>
                             {% endif %}
-                            {% if user and (user.get("role") == "admin" or user.get("role") == "seller") %}
+                            {% if user and user.get("role") == "seller" %}
                             <li class="nav-item ms-3 ms-lg-0">
-                                <a class="nav-link px-2 text-black text-center" href="list_property.html">List
-                                    Property</a>
-                            </li>
-                            <li class="nav-item ms-3 ms-lg-0">
-                                <a class="nav-link px-2 text-black text-center" href="listings.html">My
+                                <a class="nav-link px-2 text-black text-center" href="{{ url_for('main.listings') }}">My
                                     Listings</a>
+                            </li>
+                            {% endif %}
+                            {% if user and user.get("role") == "admin" %}
+                            <li class="nav-item ms-3 ms-lg-0">
+                                <a class="nav-link px-2 text-black text-center" href="{{ url_for('main.admin_dashboard') }}">Admin
+                                    Dashboard</a>
                             </li>
                             {% endif %}
                         </ul>
