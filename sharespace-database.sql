@@ -527,24 +527,6 @@ VALUES
 (6,8);
 
 
-
-INSERT INTO enquiries
-(buyer_id, property_id, message)
-
-VALUES
-
-(5, 1, 'Is the room still available?'),
-
-(5, 3, 'Can I schedule an inspection this weekend?'),
-
-(6, 8, 'Are utilities included in rent?'),
-
-(6, 11, 'Is parking available nearby?'),
-
-(5, 15, 'Are pets allowed in this apartment?');
-
-
-
 INSERT INTO offers
 (buyer_id, property_id, offered_price, status)
 
