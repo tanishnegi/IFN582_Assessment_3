@@ -166,17 +166,17 @@ INSERT INTO users
 
 VALUES
 
-('Admin', 'One', 'admin1@sharespace.com', 'hashedpassword', '0400000001', 'admin'),
+('Admin', 'One', 'admin1@sharespace.com', '8776f108e247ab1e2b323042c049c266407c81fbad41bde1e8dfc1bb66fd267e', '0400000001', 'admin'),
 
-('Admin', 'Two', 'admin2@sharespace.com', 'hashedpassword', '0400000002', 'admin'),
+('Admin', 'Two', 'admin2@sharespace.com', '8776f108e247ab1e2b323042c049c266407c81fbad41bde1e8dfc1bb66fd267e', '0400000002', 'admin'),
 
-('Sarah', 'Mitchell', 'sarah@sharespace.com', 'hashedpassword', '0400000003', 'seller'),
+('Sarah', 'Mitchell', 'sarah@sharespace.com', '8776f108e247ab1e2b323042c049c266407c81fbad41bde1e8dfc1bb66fd267e', '0400000003', 'seller'),
 
-('Daniel', 'Roberts', 'daniel@sharespace.com', 'hashedpassword', '0400000004', 'seller'),
+('Daniel', 'Roberts', 'daniel@sharespace.com', '8776f108e247ab1e2b323042c049c266407c81fbad41bde1e8dfc1bb66fd267e', '0400000004', 'seller'),
 
-('Rahul', 'Harlapur', 'rahul@sharespace.com', 'hashedpassword', '0400000005', 'buyer'),
+('Rahul', 'Harlapur', 'rahul@sharespace.com', '8776f108e247ab1e2b323042c049c266407c81fbad41bde1e8dfc1bb66fd267e', '0400000005', 'buyer'),
 
-('Emily', 'Chen', 'emily@sharespace.com', 'hashedpassword', '0400000006', 'buyer');
+('Emily', 'Chen', 'emily@sharespace.com', '8776f108e247ab1e2b323042c049c266407c81fbad41bde1e8dfc1bb66fd267e', '0400000006', 'buyer');
 
 
 
