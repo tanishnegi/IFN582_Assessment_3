@@ -25,7 +25,6 @@ class Property:
     bedrooms: int
     bathrooms: int
     occupants: int
-    seller_id: int
     image: str
     description: str
     created_at: datetime
@@ -33,15 +32,6 @@ class Property:
     compatibility: int = 0
     images: list = None
     host_preferences: list = None
-
-
-@dataclass
-class Bookmark:
-    id: int
-    user_id: int
-    property_id: int
-    note: str
-    created_at: datetime
 
 @dataclass
 class Preference:
@@ -65,14 +55,4 @@ class Enquiry:
     buyer_id: int
     subject: str
     message: str
-    created_at: datetime
-
-
-@dataclass
-class Offer:
-    id: int
-    buyer_id: int
-    property_id: int
-    offered_price: float
-    status: str
     created_at: datetime

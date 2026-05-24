@@ -1,14 +1,9 @@
-{% extends "layout.html" %}
-
-{% block title %}
-Property Details
-{% endblock %}
-
-{% block content %}
+{% extends "layout.html" %} {% block title %} Property Details {% endblock %} {%
+block content %}
 <section id="property_details">
     <section class="py-4 text-center">
         <h2 class="fw-bold" style="color: #e0e0e0;">Property Details</h2>
-        <p style="color: #6c757d;">
+        <p  style="color: #6c757d;">
             View detailed information about the property and host preferences
         </p>
     </section>
@@ -22,8 +17,7 @@ Property Details
                             {% for image in property.images %}
                             <div class="carousel-item {% if loop.first %}active{% endif %}">
                                 <img src="{{ url_for('static', filename=image) }}" class="d-block w-100"
-                                    alt="{{ property.title }}" {% if not loop.first %}loading="lazy"{% endif %}
-                                    decoding="async" />
+                                    alt="{{ property.title }}" />
                             </div>
                             {% endfor %}
                         </div>
@@ -32,7 +26,7 @@ Property Details
                             <div class="col-4">
                                 <img src="{{ url_for('static', filename=image) }}"
                                     class="img-fluid thumbnail-img {% if loop.first %}active{% endif %}"
-                                    alt="{{ property.title }}" loading="lazy" decoding="async" />
+                                    alt="{{ property.title }}" />
                             </div>
                             {% endfor %}
                         </div>
@@ -51,179 +45,89 @@ Property Details
                         No image available
                     </div>
                     {% endif %}
-
-                    {% if session.get("user") and session.get("user").get("role") == "buyer" %}
-                    <form method="POST" action="{{ url_for('main.save_property_bookmark', property_id=property.id) }}"
-                        class="mt-4 p-3 section-box">
-                        {{ bookmark_form.hidden_tag() }}
-                        <div class="d-flex align-items-center justify-content-between mb-2">
-                            <span class="fw-semibold">Bookmark</span>
-                            {% if bookmark %}
-                            <span class="badge bg-success">Saved</span>
-                            {% endif %}
-                        </div>
-                        <textarea name="note" class="form-control mb-3" rows="3"
-                            placeholder="Write a short note about this property">{{ (bookmark.note or '') if bookmark else '' }}</textarea>
-                        <div class="d-flex flex-wrap gap-2">
-                            <button type="submit" class="btn btn-outline-dark rounded-pill">
-                                {% if bookmark %}Update Bookmark{% else %}Save Bookmark{% endif %}
+                </div>
+                <div class="col-12 col-md-6 mt-4 mt-md-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h2 class="fw-bold mb-2 text-dark">{{ property.title }}</h2>
+                        <div class="pe-3">
+                            <button id="bookmark-button" class="border rounded-2 p-2" type="button">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-bookmark" viewBox="0 0 16 16">
+                                    <path
+                                        d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z" />
+                                </svg>
                             </button>
-                            {% if bookmark %}
-                            <button type="submit"
-                                formaction="{{ url_for('main.remove_property_bookmark', property_id=property.id) }}"
-                                class="btn btn-outline-danger rounded-pill">
-                                Remove Bookmark
-                            </button>
-                            {% endif %}
                         </div>
-                    </form>
-                    {% endif %}
-
-                    <div class="mt-3 p-3 section-box">
-                        <p class="fw-semibold mb-2">Property details</p>
-                        <p class="property-desc text-dark fw-bold mb-0">
-                            {{ property.description }}
-                        </p>
                     </div>
-
+                    <p class="text-muted d-flex align-items-center gap-1 mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-geo-alt" viewBox="0 0 16 16">
+                            <path
+                                d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A32 32 0 0 1 8 14.58a32 32 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94" />
+                            <path d="M8 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4" />
+                        </svg>
+                        {{ property.suburb }}, {{ property.city }}, {{ property.postcode }}
+                    </p>
+                    <h4 class="fw-bold text-primary mb-1">
+                        ${{ "%.0f"|format(property.price) }}/week
+                    </h4>
+                    <p class="text-muted mb-3">
+                        {{ property.occupants }} occupants &bull; {{ property.bedrooms }}
+                        bedrooms &bull; {{ property.bathrooms }} bath
+                    </p>
+                    <p class="property-desc text-dark fw-bold">
+                        {{ property.description }}
+                    </p>
+                    {% if property.detail_description %}
+                    <p class="property-desc text-dark fw-bold">
+                        {{ property.detail_description }}
+                    </p>
+                    {% endif %}
                     <div class="mt-3 p-3 section-box">
-                        <p class="fw-semibold mb-2">Amenities and host preferences</p>
+                        <p class="fw-semibold mb-2">Host Preferences</p>
                         <div class="d-flex flex-wrap gap-2">
-                            {% if property.host_preferences %}
-                            {% for preference in property.host_preferences %}
-                            <span class="badge bg-primary-subtle text-primary rounded-pill px-3">{{ preference }}</span>
-                            {% endfor %}
-                            {% else %}
+                            {% if property.host_preferences %} {% for preference in
+                            property.host_preferences %}
+                            <span class="badge bg-primary-subtle text-primary rounded-pill px-3">
+                                {{ preference }}
+                            </span>
+                            {% endfor %} {% else %}
                             <span class="text-muted">No preferences listed.</span>
                             {% endif %}
                         </div>
                     </div>
-
+                    {% if session.get("user") and session.get("user").get("role") ==
+                    "buyer" %}
                     <div class="mt-3 p-3 section-box">
-                        <p class="fw-semibold mb-2">Property documents</p>
-                        <div class="d-flex flex-column gap-2">
-                            {% for document in document_links %}
-                            <div class="border rounded-3 p-3 bg-light">
-                                <div class="fw-semibold">{{ document.label }}</div>
-                                <div class="small text-muted">{{ document.description }}</div>
-                            </div>
-                            {% endfor %}
-                            {% if not document_links %}
-                            <span class="text-muted">No property documents have been uploaded for this listing yet.</span>
-                            {% endif %}
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="fw-semibold">Compatibility</span>
+                            <span class="text-success fw-semibold">{{ property.compatibility|int }}%</span>
                         </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-md-6 mt-4 mt-md-0">
-                    <div class="section-box p-3 mb-3">
-                        <div class="d-flex justify-content-between align-items-start gap-3">
-                            <div>
-                                <h2 class="fw-bold mb-1 text-dark">{{ property.title }}</h2>
-                                <p class="text-muted d-flex align-items-center gap-1 mb-0">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                        class="bi bi-geo-alt" viewBox="0 0 16 16">
-                                        <path
-                                            d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A32 32 0 0 1 8 14.58a32 32 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94" />
-                                        <path d="M8 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4" />
-                                    </svg>
-                                    {{ property.suburb }}, {{ property.city }}, {{ property.postcode }}
-                                </p>
-                            </div>
-                            <span class="badge text-bg-dark">{{ property.property_type }}</span>
-                        </div>
-                    </div>
-                    <div class="row g-3 mb-3 row-cols-1 row-cols-sm-2">
-                        <div class="col">
-                            <div class="section-box p-3 h-100">
-                                <div class="small text-muted">Price</div>
-                                <div class="h4 fw-bold text-primary mb-0">${{ "%.0f"|format(property.price) }}/week</div>
+                        <div class="progress" style="height: 6px">
+                            <div class="progress-bar bg-success"
+                                style="--compatibility-width: {{ property.compatibility|int }}%; width: var(--compatibility-width);">
                             </div>
                         </div>
-                        <div class="col">
-                            <div class="section-box p-3 h-100">
-                                <div class="small text-muted">Availability</div>
-                                <div class="fw-semibold text-dark mb-0">Available now</div>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="section-box p-3 h-100">
-                                <div class="small text-muted">Listed</div>
-                                <div class="fw-semibold text-dark mb-0">{{ property.created_at }}</div>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="section-box p-3 h-100">
-                                <div class="small text-muted">Bedrooms</div>
-                                <div class="fw-semibold text-dark mb-0">{{ property.bedrooms }}</div>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="section-box p-3 h-100">
-                                <div class="small text-muted">Bathrooms</div>
-                                <div class="fw-semibold text-dark mb-0">{{ property.bathrooms }}</div>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="section-box p-3 h-100">
-                                <div class="small text-muted">Car spaces</div>
-                                <div class="fw-semibold text-dark mb-0">Not listed</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="section-box p-3 mb-3">
-                        <div class="small text-muted mb-1">Occupancy</div>
-                        <div class="fw-semibold text-dark">{{ property.occupants }} occupants</div>
-                    </div>
-                    {% if session.get("user") and session.get("user").get("role") == "buyer" %}
-                    <div class="row g-3 mb-3">
-                        <div class="col-12 col-sm-6">
-                            <div class="section-box p-3 h-100">
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span class="fw-semibold">Compatibility</span>
-                                    <span class="text-success fw-semibold">{{ property.compatibility|int }}%</span>
-                                </div>
-                                <div class="progress" style="height: 6px">
-                                    <div class="progress-bar bg-success"
-                                        style="--compatibility-width: {{ property.compatibility|int }}%; width: var(--compatibility-width);">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {% if offer %}
-                        <div class="col-12 col-sm-6">
-                            <div class="section-box p-3 h-100">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span class="fw-semibold">Your latest offer</span>
-                                    <span class="badge bg-warning text-dark text-uppercase">{{ offer.status }}</span>
-                                </div>
-                                <div class="fw-bold text-dark">${{ "%.2f"|format(offer.offered_price) }}</div>
-                            </div>
-                        </div>
-                        {% endif %}
                     </div>
                     {% endif %}
                     <div class="mt-4 p-3 section-box">
-                        <div class="d-grid gap-2 d-sm-flex">
-                            {% if session.get("user") and session.get("user").get("role") == "buyer" %}
-                            <button class="btn btn-primary py-2 rounded-pill fw-semibold flex-fill" type="button"
-                                data-bs-toggle="modal" data-bs-target="#enquiryModal">
-                                Send Enquiry
-                            </button>
-                            <button class="btn btn-outline-dark py-2 rounded-pill fw-semibold flex-fill" type="button"
-                                data-bs-toggle="modal" data-bs-target="#offerModal">
-                                Submit Offer
-                            </button>
-                            {% else %}
-                            <a href="{{ url_for('main.login') }}"
-                                class="btn btn-primary py-2 rounded-pill fw-semibold flex-fill">Login to Send Enquiry</a>
-                            {% endif %}
-                        </div>
+                        {% if session.get("user") and session.get("user").get("role") == "buyer" %}
+                        <button class="btn btn-primary w-100 py-2 rounded-pill fw-semibold" type="button"
+                            data-bs-toggle="modal" data-bs-target="#enquiryModal">
+                            Send Enquiry
+                        </button>
+                        {% else %}
+                        <a href="{{ url_for('main.login') }}"
+                            class="btn btn-primary w-100 py-2 rounded-pill fw-semibold">Login to Send Enquiry</a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
+            
         </div>
+
     </section>
+ 
 </section>
 {% if session.get("user") and session.get("user").get("role") == "buyer" %}
 <div class="modal fade" id="enquiryModal" tabindex="-1" aria-hidden="true">
@@ -239,16 +143,10 @@ Property Details
                     <div class="mb-3">
                         {{ enquiry_form.subject.label(class="form-label") }}
                         {{ enquiry_form.subject(class="form-control", placeholder="Enquiry subject") }}
-                        {% for error in enquiry_form.subject.errors %}
-                        <div class="text-danger small mt-1">{{ error }}</div>
-                        {% endfor %}
                     </div>
                     <div class="mb-3">
                         {{ enquiry_form.message.label(class="form-label") }}
                         {{ enquiry_form.message(class="form-control", rows="4", placeholder="Write your message") }}
-                        {% for error in enquiry_form.message.errors %}
-                        <div class="text-danger small mt-1">{{ error }}</div>
-                        {% endfor %}
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -256,39 +154,6 @@ Property Details
                         Cancel
                     </button>
                     {{ enquiry_form.submit(class="btn btn-primary rounded-pill fw-semibold") }}
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="offerModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Submit Offer</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form method="POST" action="{{ url_for('main.submit_property_offer', property_id=property.id) }}">
-                <div class="modal-body">
-                    {{ offer_form.hidden_tag() }}
-                    <div class="mb-3">
-                        {{ offer_form.offered_price.label(class="form-label") }}
-                        <div class="input-group">
-                            <span class="input-group-text">$</span>
-                            {{ offer_form.offered_price(class="form-control", placeholder="0.00", min="0.01", step="0.01") }}
-                        </div>
-                        {% for error in offer_form.offered_price.errors %}
-                        <div class="text-danger small mt-1">{{ error }}</div>
-                        {% endfor %}
-                        <div class="form-text">Enter the amount you want to offer to rent or purchase this property.</div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-dark rounded-pill" data-bs-dismiss="modal">
-                        Cancel
-                    </button>
-                    {{ offer_form.submit(class="btn btn-primary rounded-pill fw-semibold") }}
                 </div>
             </form>
         </div>
