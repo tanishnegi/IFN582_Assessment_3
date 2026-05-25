@@ -56,3 +56,12 @@ class Enquiry:
     subject: str
     message: str
     created_at: datetime
+
+@dataclass
+class Bookmark:
+    id: int
+    user_id: int
+    property_id: int
+    notes: str
+    created_at: datetime
+    property: Property = None

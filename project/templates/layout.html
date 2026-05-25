@@ -36,7 +36,7 @@
                             {% set user = session.get("user") %}
                             {% if user and user.get("role") == "buyer" %}
                             <li class="nav-item ms-3 ms-lg-0 ">
-                                <a class="nav-link text-black text-center" href="./bookmarks.html">Bookmarks</a>
+                                <a class="nav-link text-black text-center" href="{{ url_for('main.bookmarks') }}">Bookmarks</a>
                             </li>
                             <li class="nav-item ms-3 ms-lg-0 ">
                                 <a class="nav-link text-black text-center" href="./enquiries.html">Enquiries</a>
