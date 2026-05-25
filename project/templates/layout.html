@@ -19,7 +19,6 @@
 
   <body>
     <section>
-<<<<<<< HEAD
       <div id="header" class="bg-light border-bottom border-dark">
         <nav class="navbar navbar-expand-lg">
           <div class="container-fluid px-5 py-2">
@@ -48,94 +47,6 @@
               data-bs-target="#navbarSupportedContent"
             >
               <span class="navbar-toggler-icon"></span>
-=======
-        <div id="header" class="bg-light border-bottom border-dark">
-            <nav class="navbar navbar-expand-lg">
-                <div class="container-fluid px-5 py-2">
-                    <div class="me-2 d-flex align-items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="20" fill="currentColor"
-                            class="bi bi-share">
-                            <path
-                                d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5" />
-                        </svg>
-                    </div>
-                    <a class="navbar-brand fw-bold text-center" href="{{ url_for('main.index') }}">ShareSpace</a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#navbarSupportedContent">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse g md-d-flex md-row md-align-items-center"
-                        id="navbarSupportedContent">
-                        <ul class="navbar-nav me-auto">
-                            {% set user = session.get("user") %}
-                            {% if user and user.get("role") == "buyer" %}
-                            <li class="nav-item ms-3 ms-lg-0 ">
-                                <a class="nav-link text-black text-center" href="{{ url_for('main.bookmarks') }}">Bookmarks</a>
-                            </li>
-                            <li class="nav-item ms-3 ms-lg-0 ">
-                                <a class="nav-link text-black text-center" href="./enquiries.html">Enquiries</a>
-                            </li>
-                            <li class="nav-item ms-3 ms-lg-0 ">
-                                <button class="nav-link text-black text-center" data-bs-toggle="modal"
-                                    data-bs-target="#preferencesModal">
-                                    My Preferences
-                                </button>
-                            </li>
-                            {% endif %}
-                            {% if user and (user.get("role") == "admin" or user.get("role") == "seller") %}
-                            <li class="nav-item ms-3 ms-lg-0">
-                                <a class="nav-link px-2 text-black text-center" href="list_property.html">List
-                                    Property</a>
-                            </li>
-                            <li class="nav-item ms-3 ms-lg-0">
-                                <a class="nav-link px-2 text-black text-center" href="listings.html">My
-                                    Listings</a>
-                            </li>
-                            {% endif %}
-                        </ul>
-
-                        <div class="d-flex align-items-center justify-content-center gap-2 mt-2 mt-lg-0">
-                            {% if user %}
-                            <div class="d-flex justify-content-center align-items-center text-center gap-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor"
-                                    class="bi bi-person-circle" viewBox="0 0 16 16">
-                                    <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
-                                    <path fill-rule="evenodd"
-                                        d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1" />
-                                </svg>
-                            </div>
-                            <span class="text-muted">Welcome, {{ user.get("firstname") }}!</span>
-                            <a href="{{ url_for('main.logout') }}" class="btn btn-outline-dark rounded-pill btn-sm">Logout</a>
-                            {% else %}
-                            <a href="{{ url_for('main.login') }}" class="btn btn-primary rounded-pill px-4">Login</a>
-                            <div class="d-flex justify-content-center align-items-center text-center gap-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor"
-                                    class="bi bi-person-circle" viewBox="0 0 16 16">
-                                    <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
-                                    <path fill-rule="evenodd"
-                                        d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1" />
-                                </svg>
-                            </div>
-                            {% endif %}
-                        </div>
-
-                    </div>
-                </div>
-            </nav>
-        </div>
-    </section>
-    <div class="position-fixed top-5 end-0 p-3" style="
-        z-index: 9999;
-        width: 100%;
-        max-width: 500px;
-    ">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        {% for category, message in messages %}
-        <div class="alert alert-{{ category }} alert-dismissible fade show shadow">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert">
->>>>>>> 60643c6f7a8256484b5cfe4a3c5e111b9a40de3f
             </button>
             <div
               class="collapse navbar-collapse g md-d-flex md-row md-align-items-center"
@@ -147,7 +58,7 @@
                 <li class="nav-item ms-3 ms-lg-0">
                   <a
                     class="nav-link text-black text-center"
-                    href="./bookmarks.html"
+                    href="{{ url_for('main.bookmarks') }}"
                     >Bookmarks</a
                   >
                 </li>
