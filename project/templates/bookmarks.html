@@ -1,0 +1,122 @@
+{% extends "layout.html" %}
+
+{% block title %}
+My Bookmarks
+{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+
+        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4">
+            <div>
+                <h2 class="fw-bold mb-1">My Bookmarks</h2>
+                <p class="text-muted mb-0">
+                    Properties you've saved for later. Add notes to remember what stood out.
+                </p>
+            </div>
+            <a href="{{ url_for('main.index') }}" class="btn btn-outline-dark rounded-pill mt-3 mt-md-0">
+                Browse more properties
+            </a>
+        </div>
+
+        {% if bookmarks %}
+        <div class="row g-4">
+            {% for bookmark in bookmarks %}
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card shadow-sm border-0 h-100">
+
+                    <img src="{{ url_for('static', filename=bookmark.property.image) }}" class="card-img-top">
+
+                    <div class="card-body d-flex flex-column">
+
+                        <div class="d-flex flex-row align-items-start gap-2">
+                            <div>
+                                <h5 class="card-title mb-1">
+                                    {{ bookmark.property.title }}
+                                </h5>
+                                <p class="small text-primary mb-0">
+                                    {{ bookmark.property.property_type }}
+                                </p>
+                            </div>
+                            <div class="ms-auto">
+                                <form method="POST" action="{{ url_for('main.remove_bookmark_route', property_id=bookmark.property.id) }}">
+                                    <button type="submit" class="border rounded-2 p-2 bg-light" title="Remove from bookmarks">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            fill="currentColor" class="bi bi-bookmark-fill" viewBox="0 0 16 16">
+                                            <path d="M2 2v13.5a.5.5 0 0 0 .74.439L8 13.069l5.26 2.87A.5.5 0 0 0 14 15.5V2a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2"/>
+                                        </svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <p class="text-muted mt-2 mb-0">
+                            {{ bookmark.property.suburb }}, {{ bookmark.property.city }}, {{ bookmark.property.postcode }}
+                        </p>
+                        <p class="mb-0 fw-bold">
+                            ${{ bookmark.property.price }}/week
+                        </p>
+                        <p class="text-muted mb-3">
+                            {{ bookmark.property.occupants }} occupants ·
+                            {{ bookmark.property.bedrooms }} bedrooms ·
+                            {{ bookmark.property.bathrooms }} bath
+                        </p>
+
+                        {% if bookmark.notes %}
+                        <div class="section-box p-2 mb-3">
+                            <p class="small text-muted mb-1 fw-bold">Your notes</p>
+                            <p class="small mb-0">
+                                {{ bookmark.notes }}
+                            </p>
+                        </div>
+                        {% endif %}
+
+                        <form method="POST" action="{{ url_for('main.update_bookmark_notes_route', property_id=bookmark.property.id) }}" class="mt-auto">
+                            {{ notes_form.hidden_tag() }}
+                            <label for="notes-{{ bookmark.property.id }}" class="form-label small fw-bold mb-1">
+                                {% if bookmark.notes %}Edit notes{% else %}Add notes{% endif %}
+                            </label>
+                            <textarea
+                                id="notes-{{ bookmark.property.id }}"
+                                name="notes"
+                                class="form-control mb-2"
+                                rows="2"
+                                placeholder="What stood out about this property?"
+                            >{{ bookmark.notes }}</textarea>
+                            <button type="submit" class="btn btn-dark rounded-pill w-100">
+                                Save notes
+                            </button>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% else %}
+
+        <div class="card border-0 shadow-sm p-5 text-center">
+            <div class="mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48"
+                    fill="currentColor" class="bi bi-bookmark text-muted" viewBox="0 0 16 16">
+                    <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z"/>
+                </svg>
+            </div>
+            <h4 class="fw-bold">No bookmarks yet</h4>
+            <p class="text-muted mb-4">
+                Browse properties and click the bookmark icon to save them here.
+            </p>
+            <div>
+                <a href="{{ url_for('main.index') }}" class="btn btn-primary rounded-pill px-4">
+                    Browse properties
+                </a>
+            </div>
+        </div>
+
+        {% endif %}
+
+    </div>
+</section>
+{% endblock %}

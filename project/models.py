@@ -73,3 +73,12 @@ class Property:
     image: str
     description: str
     created_at: str
+
+@dataclass
+class Bookmark:
+    id: int
+    user_id: int
+    property_id: int
+    notes: str
+    created_at: datetime
+    property: Property = None

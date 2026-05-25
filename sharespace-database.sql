@@ -111,6 +111,29 @@ CREATE TABLE user_preferences (
 
 );
 
+CREATE TABLE bookmarks (
+
+    id INT AUTO_INCREMENT PRIMARY KEY,
+
+    user_id INT NOT NULL,
+
+    property_id INT NOT NULL,
+
+    notes TEXT,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    UNIQUE KEY unique_bookmark (user_id, property_id),
+
+    FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (property_id)
+        REFERENCES properties(id)
+        ON DELETE CASCADE
+
+);
 
 CREATE TABLE enquiries (
 
@@ -593,3 +616,18 @@ VALUES
 (6, 11, 'Parking question', 'Is parking available nearby?'),
 
 (5, 15, 'Pet policy', 'Are pets allowed in this apartment?');
+
+INSERT INTO bookmarks
+(user_id, property_id, notes)
+
+VALUES
+
+(5, 1, 'Close to UQ, great location for next semester. Need to ask about lease length.'),
+
+(5, 3, 'Beautiful place but might be over budget. Worth a second look.'),
+
+(5, 7, 'Right next to campus - perfect for studying.'),
+
+(6, 8, 'Big house with backyard, ideal for the dog. Need to confirm pet policy.'),
+
+(6, 11, 'Social vibe, near nightlife. Top pick so far.');

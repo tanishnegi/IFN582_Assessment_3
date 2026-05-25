@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 from flask import Blueprint, render_template, request, session, flash,redirect, url_for, abort, current_app
 from .db import get_properties, search_properties , create_user, user_exists, check_for_user,get_preferences,calculate_compatibility,save_user_preferences,get_user_preferences, get_property_details, create_enquiry, add_property, add_property_image, get_my_listings,delete_property, get_property_by_id, update_property, delete_additional_images
 from .forms import SearchForm, RegisterForm, LoginForm, EnquiryForm, PropertyForm
+=======
+from flask import Blueprint, render_template, request, session, flash,redirect, url_for, abort
+from .db import get_properties, search_properties , create_user, user_exists, check_for_user,get_preferences,calculate_compatibility,save_user_preferences,get_user_preferences, get_property_details, create_enquiry, add_bookmark, remove_bookmark, get_bookmarks_for_user, update_bookmark_notes
+from .forms import SearchForm, RegisterForm, LoginForm, EnquiryForm , BookmarkNotesForm
+>>>>>>> 60643c6f7a8256484b5cfe4a3c5e111b9a40de3f
 from hashlib import sha256
 import os
 from werkzeug.utils import secure_filename
@@ -346,3 +352,59 @@ def edit_property(property_id):
         property=property
     )
 
+@bp.route('/bookmarks')
+def bookmarks():
+    if not session.get("logged_in") or session["user"]["role"] != "buyer":
+        flash("Please log in as a tenant to view your bookmarks.", "warning")
+        return redirect(url_for('main.login'))
+
+    user_id = session["user"]["id"]
+    bookmarks = get_bookmarks_for_user(user_id)
+    notes_form = BookmarkNotesForm()
+    preferences = get_preferences()
+    user_preferences = get_user_preferences(user_id)
+
+    return render_template(
+        'bookmarks.html',
+        bookmarks=bookmarks,
+        notes_form=notes_form,
+        preferences=preferences,
+        user_preferences=user_preferences
+    )
+
+
+@bp.route('/bookmarks/add/<int:property_id>', methods=['POST'])
+def add_bookmark_route(property_id):
+    if not session.get("logged_in") or session["user"]["role"] != "buyer":
+        flash("Please log in as a tenant to bookmark properties.", "warning")
+        return redirect(url_for('main.login'))
+
+    user_id = session["user"]["id"]
+    add_bookmark(user_id, property_id)
+    flash("Property added to your bookmarks.", "success")
+    return redirect(url_for('main.index'))
+
+
+@bp.route('/bookmarks/remove/<int:property_id>', methods=['POST'])
+def remove_bookmark_route(property_id):
+    if not session.get("logged_in") or session["user"]["role"] != "buyer":
+        flash("Please log in to manage your bookmarks.", "warning")
+        return redirect(url_for('main.login'))
+
+    user_id = session["user"]["id"]
+    remove_bookmark(user_id, property_id)
+    flash("Property removed from your bookmarks.", "info")
+    return redirect(url_for('main.bookmarks'))
+
+
+@bp.route('/bookmarks/notes/<int:property_id>', methods=['POST'])
+def update_bookmark_notes_route(property_id):
+    if not session.get("logged_in") or session["user"]["role"] != "buyer":
+        flash("Please log in to update your bookmark notes.", "warning")
+        return redirect(url_for('main.login'))
+
+    user_id = session["user"]["id"]
+    notes = request.form.get('notes', '')
+    update_bookmark_notes(user_id, property_id, notes)
+    flash("Notes saved.", "success")
+    return redirect(url_for('main.bookmarks'))

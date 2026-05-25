@@ -14,7 +14,7 @@ def create_app():
     app.secret_key = 'BetterSecretNeeded123'
     # MySQL configurations
     app.config['MYSQL_USER'] = 'root'
-    app.config['MYSQL_PASSWORD'] = 'admin'
+    app.config['MYSQL_PASSWORD'] = '1234'
     app.config['MYSQL_DB'] = 'sharespace'
     app.config['MYSQL_HOST'] = 'localhost'
     app.config['MYSQL_CURSORCLASS'] = 'DictCursor'

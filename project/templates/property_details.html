@@ -49,15 +49,19 @@ block content %}
                 <div class="col-12 col-md-6 mt-4 mt-md-0">
                     <div class="d-flex justify-content-between align-items-center">
                         <h2 class="fw-bold mb-2 text-dark">{{ property.title }}</h2>
+                        {% if session.get("logged_in") and session["user"]["role"] == "buyer" %}
                         <div class="pe-3">
-                            <button id="bookmark-button" class="border rounded-2 p-2" type="button">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                    class="bi bi-bookmark" viewBox="0 0 16 16">
+                            <form method="POST" action="{{ url_for('main.add_bookmark_route', property_id=property.id) }}">
+                                <button id="bookmark-button" class="border rounded-2 p-2" type="submit"  title="Save to bookmarks">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                        class="bi bi-bookmark" viewBox="0 0 16 16">
                                     <path
                                         d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z" />
-                                </svg>
-                            </button>
+                                    </svg>
+                                </button>
+                            </form>
                         </div>
+                        {% endif %}
                     </div>
                     <p class="text-muted d-flex align-items-center gap-1 mb-3">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"

@@ -1,7 +1,7 @@
 from flask import session
 
 from . import mysql
-from .models import Preference, Property, User
+from .models import Preference, Property, User, Bookmark
 
 
 def create_user(form):
@@ -533,3 +533,114 @@ def delete_property(property_id):
     mysql.connection.commit()
 
     cur.close()
+
+def add_bookmark(user_id, property_id):
+
+    cur = mysql.connection.cursor()
+
+    cur.execute("""
+        INSERT IGNORE INTO bookmarks (user_id, property_id)
+        VALUES (%s, %s)
+    """, (user_id, property_id))
+
+    mysql.connection.commit()
+
+    cur.close()
+
+
+def remove_bookmark(user_id, property_id):
+
+    cur = mysql.connection.cursor()
+
+    cur.execute("""
+        DELETE FROM bookmarks
+        WHERE user_id = %s AND property_id = %s
+    """, (user_id, property_id))
+
+    mysql.connection.commit()
+
+    cur.close()
+
+
+def update_bookmark_notes(user_id, property_id, notes):
+
+    cur = mysql.connection.cursor()
+
+    cur.execute("""
+        UPDATE bookmarks
+        SET notes = %s
+        WHERE user_id = %s AND property_id = %s
+    """, (notes, user_id, property_id))
+
+    mysql.connection.commit()
+
+    cur.close()
+
+
+def get_bookmarks_for_user(user_id):
+
+    cur = mysql.connection.cursor()
+
+    cur.execute("""
+        SELECT
+            b.id AS bookmark_id,
+            b.user_id,
+            b.property_id,
+            b.notes,
+            b.created_at AS bookmark_created_at,
+            p.id AS p_id,
+            p.title,
+            p.property_type,
+            p.price,
+            p.suburb,
+            p.city,
+            p.postcode,
+            p.bedrooms,
+            p.bathrooms,
+            p.occupants,
+            p.image,
+            p.description,
+            p.created_at AS p_created_at
+        FROM bookmarks b
+        JOIN properties p
+            ON b.property_id = p.id
+        WHERE b.user_id = %s
+        ORDER BY b.created_at DESC
+    """, (user_id,))
+
+    rows = cur.fetchall()
+
+    cur.close()
+
+    bookmarks = []
+
+    for row in rows:
+
+        property = Property(
+            row['p_id'],
+            row['title'],
+            row['property_type'],
+            float(row['price']),
+            row['suburb'],
+            row['city'],
+            row['postcode'],
+            row['bedrooms'],
+            row['bathrooms'],
+            row['occupants'],
+            row['image'],
+            row['description'],
+            row['p_created_at']
+        )
+
+        bookmark = Bookmark(
+            id=row['bookmark_id'],
+            user_id=row['user_id'],
+            property_id=row['property_id'],
+            notes=row['notes'] or '',
+            created_at=row['bookmark_created_at'],
+            property=property
+        )
+
+        bookmarks.append(bookmark)
+
+    return bookmarks

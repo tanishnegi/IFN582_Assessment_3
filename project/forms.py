@@ -152,3 +152,10 @@ class PropertyForm(FlaskForm):
     submit = SubmitField(
         'Save Property'
     )
+
+
+class BookmarkNotesForm(FlaskForm):
+
+    notes = TextAreaField('Notes')
+
+    submit = SubmitField('Save Notes')
