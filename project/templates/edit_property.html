@@ -1,0 +1,79 @@
+{% extends 'layout.html' %} {% block content %}
+
+<div class="container mt-5">
+  <h2 class="mb-4">Edit Property</h2>
+
+  <form method="POST" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+
+    <div class="mb-3">
+      {{ form.title.label(class="form-label") }} {{
+      form.title(class="form-control") }}
+    </div>
+
+    <div class="mb-3">
+      {{ form.property_type.label(class="form-label") }} {{
+      form.property_type(class="form-control") }}
+    </div>
+
+    <div class="mb-3">
+      {{ form.price.label(class="form-label") }} {{
+      form.price(class="form-control") }}
+    </div>
+
+    <div class="mb-3">
+      {{ form.suburb.label(class="form-label") }} {{
+      form.suburb(class="form-control") }}
+    </div>
+
+    <div class="mb-3">
+      {{ form.city.label(class="form-label") }} {{
+      form.city(class="form-control") }}
+    </div>
+
+    <div class="mb-3">
+      {{ form.postcode.label(class="form-label") }} {{
+      form.postcode(class="form-control") }}
+    </div>
+
+    <div class="mb-3">
+      {{ form.bedrooms.label(class="form-label") }} {{
+      form.bedrooms(class="form-control") }}
+    </div>
+
+    <div class="mb-3">
+      {{ form.bathrooms.label(class="form-label") }} {{
+      form.bathrooms(class="form-control") }}
+    </div>
+
+    <div class="mb-3">
+      {{ form.occupants.label(class="form-label") }} {{
+      form.occupants(class="form-control") }}
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label"> Current Cover Image </label>
+
+      <p class="text-muted">{{ property.image.split('/')[-1] }}</p>
+    </div>
+
+    <div class="mb-3">
+      {{ form.image.label(class="form-label") }} {{
+      form.image(class="form-control") }}
+    </div>
+
+    <div class="mb-3">
+      {{ form.additional_images.label(class="form-label") }} {{
+      form.additional_images(class="form-control") }}
+    </div>
+
+    <div class="mb-3">
+      {{ form.description.label(class="form-label") }} {{
+      form.description(class="form-control", rows="5") }}
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update Property</button>
+  </form>
+</div>
+
+{% endblock %}

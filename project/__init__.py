@@ -2,6 +2,7 @@
 from flask import Flask, render_template, session
 from flask_bootstrap import Bootstrap5
 from flask_mysqldb import MySQL
+import os
 
 mysql = MySQL()
 
@@ -13,7 +14,7 @@ def create_app():
     app.secret_key = 'BetterSecretNeeded123'
     # MySQL configurations
     app.config['MYSQL_USER'] = 'root'
-    app.config['MYSQL_PASSWORD'] = 'NewPassword123!'
+    app.config['MYSQL_PASSWORD'] = 'admin'
     app.config['MYSQL_DB'] = 'sharespace'
     app.config['MYSQL_HOST'] = 'localhost'
     app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
@@ -34,6 +35,7 @@ def create_app():
     def internal_error(e):
       return render_template("500.html"), 500
 
+    app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path,'static','img')  
 
     return app
 

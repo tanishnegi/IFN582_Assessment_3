@@ -1,0 +1,81 @@
+{% extends 'layout.html' %} {% block content %}
+
+<div class="container mt-5">
+  <h2 class="mb-4">My Listings</h2>
+
+  {% if properties %}
+
+  <div class="row">
+    {% for property in properties %}
+
+    <div class="col-md-4 mb-4">
+      <div class="card h-100 shadow-sm">
+        <img
+          src="{{ url_for('static', filename=property.image) }}"
+          class="card-img-top"
+          style="height: 250px; object-fit: cover"
+        />
+
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title text-center">{{ property.title }}</h5>
+
+          <p class="card-text text-danger">{{ property.property_type }}</p>
+
+          <p class="card-text">
+            Location: {{ property.suburb }}, {{ property.city }}, {{
+            property.postcode }}
+          </p>
+
+          <p class="card-text fw-bold">${{ property.price }}/week</p>
+
+          <p class="card-text text-info">
+            {{ property.occupants }} {% if property.occupants <= 1 %} Occupant
+            {% else %} Occupants {% endif %} . {{ property.bedrooms }} {% if
+            property.bedrooms <= 1 %} Bedroom {% else %} Bedrooms {% endif %} .
+            {{ property.bathrooms }} {% if property.bathrooms <= 1 %} Bathroom
+            {% else %} Bathrooms {% endif %}
+          </p>
+
+          <p class="card-text">
+            <span class="fw-bold">Description: </span> {% if
+            property.description|length <= 50 %} {{ property.description }} {%
+            else %} {{ property.description[:50] }}.... {% endif %}
+          </p>
+
+          <div class="mt-auto">
+            <a
+              href="{{ url_for('main.property_details', property_id=property.id) }}"
+              class="btn btn-primary btn-sm"
+            >
+              View Details
+            </a>
+
+            <a
+              href="{{ url_for('main.edit_property', property_id=property.id) }}"
+              class="btn btn-warning btn-sm"
+            >
+              Edit
+            </a>
+
+            <a
+              href="{{ url_for('main.delete_property_route', property_id=property.id) }}"
+              class="btn btn-danger btn-sm"
+            >
+              Delete
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% endfor %}
+  </div>
+
+  {% else %}
+
+  <p>No listings found.</p>
+
+  {% endif %}
+</div>
+
+{% endblock %}

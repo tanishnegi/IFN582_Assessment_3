@@ -1,7 +1,9 @@
-from flask import Blueprint, render_template, request, session, flash,redirect, url_for, abort
-from .db import get_properties, search_properties , create_user, user_exists, check_for_user,get_preferences,calculate_compatibility,save_user_preferences,get_user_preferences, get_property_details, create_enquiry
-from .forms import SearchForm, RegisterForm, LoginForm, EnquiryForm
+from flask import Blueprint, render_template, request, session, flash,redirect, url_for, abort, current_app
+from .db import get_properties, search_properties , create_user, user_exists, check_for_user,get_preferences,calculate_compatibility,save_user_preferences,get_user_preferences, get_property_details, create_enquiry, add_property, add_property_image, get_my_listings,delete_property, get_property_by_id, update_property, delete_additional_images
+from .forms import SearchForm, RegisterForm, LoginForm, EnquiryForm, PropertyForm
 from hashlib import sha256
+import os
+from werkzeug.utils import secure_filename
 
 bp = Blueprint('main', __name__)
 
@@ -147,3 +149,200 @@ def property_details(property_id):
         preferences=preferences,
         user_preferences=user_preferences
     )
+
+
+@bp.route('/listing', methods=['GET', 'POST'])
+def listing():
+
+    form = PropertyForm()
+
+    if form.validate_on_submit():
+
+        cover_image = form.image.data
+
+        filename = secure_filename(cover_image.filename)
+
+        image_path = os.path.join(
+            current_app.config['UPLOAD_FOLDER'],
+            filename
+        )
+
+        cover_image.save(image_path)
+
+        db_image_path = f"img/{filename}"
+
+
+        seller_id = session['user']['id']
+
+        property_id = add_property(
+            form,
+            seller_id,
+            db_image_path
+        )
+
+        add_property_image(
+        property_id,
+        db_image_path,
+        0
+        )
+
+
+        additional_images = form.additional_images.data
+
+        display_order = 1
+
+        for image in additional_images:
+
+            if image.filename != '':
+
+                extra_filename = secure_filename(image.filename)
+
+                extra_image_path = os.path.join(
+                    current_app.config['UPLOAD_FOLDER'],
+                    extra_filename
+                )
+
+                image.save(extra_image_path)
+
+                db_extra_path = f"img/{extra_filename}"
+
+                add_property_image(
+                    property_id,
+                    db_extra_path,
+                    display_order
+                )
+
+                display_order += 1
+
+        flash('Property has been added successfully')
+
+        return redirect(url_for('main.my_listings'))
+
+    return render_template(
+        'listing.html',
+        form=form
+    )
+
+@bp.route('/my-listings')
+def my_listings():
+
+    if not session.get("logged_in"):
+        flash("Please login first.", "warning")
+        return redirect(url_for('main.login'))
+
+    user_id = session['user']['id']
+
+    properties = get_my_listings(user_id)
+
+    return render_template(
+        'my_listings.html',
+        properties=properties
+    )
+
+@bp.route('/delete-property/<int:property_id>')
+def delete_property_route(property_id):
+
+    if not session.get("logged_in"):
+        flash("Please login first.", "warning")
+        return redirect(url_for('main.login'))
+
+    delete_property(property_id)
+
+    flash("Property deleted successfully.", "success")
+
+    return redirect(url_for('main.my_listings'))
+
+@bp.route('/edit-property/<int:property_id>', methods=['GET', 'POST'])
+def edit_property(property_id):
+
+    if not session.get("logged_in"):
+        flash("Please login first.", "warning")
+        return redirect(url_for('main.login'))
+
+    property = get_property_by_id(property_id)
+
+    if not property:
+        flash("Property not found.", "danger")
+        return redirect(url_for('main.my_listings'))
+
+    form = PropertyForm(obj=property)
+    
+
+    if form.validate_on_submit():
+
+        image_path = property.image
+
+        if form.image.data:
+
+            cover_image = form.image.data
+
+            filename = secure_filename(cover_image.filename)
+
+            upload_path = os.path.join(
+                current_app.config['UPLOAD_FOLDER'],
+                filename
+            )
+
+            cover_image.save(upload_path)
+
+            image_path = f"img/{filename}"
+
+            add_property_image(
+                property_id,
+                image_path,
+                0
+            )
+
+        update_property(
+            property_id,
+            form,
+            image_path
+        )
+
+        additional_images = form.additional_images.data
+
+        display_order = 1
+
+        if additional_images and additional_images[0].filename != '':
+
+            delete_additional_images(property_id)
+        
+        add_property_image(
+        property_id,
+        image_path,
+        0
+        )
+
+        for image in additional_images:
+
+            if image.filename != '':
+
+                filename = secure_filename(image.filename)
+
+                upload_path = os.path.join(
+                    current_app.config['UPLOAD_FOLDER'],
+                    filename
+                )
+
+                image.save(upload_path)
+
+                db_image_path = f"img/{filename}"
+
+                add_property_image(
+                    property_id,
+                    db_image_path,
+                    display_order
+                )
+
+                display_order += 1
+
+        flash("Property updated successfully.", "success")
+
+        return redirect(url_for('main.my_listings'))
+
+    return render_template(
+        'edit_property.html',
+        form=form,
+        property=property
+    )
+

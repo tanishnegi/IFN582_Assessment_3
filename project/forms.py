@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms.fields import StringField, SelectField, SubmitField, PasswordField, TextAreaField
+from wtforms.fields import StringField, SelectField, SubmitField, PasswordField, TextAreaField, IntegerField, TextAreaField,SubmitField
 from wtforms.validators import email,InputRequired
+from flask_wtf.file import FileField, MultipleFileField
 
 class RegisterForm(FlaskForm):
     """Form for user registry."""
@@ -79,3 +80,75 @@ class SearchForm(FlaskForm):
 )
 
     submit = SubmitField("Apply")
+
+class PropertyForm(FlaskForm):
+
+    title = StringField(
+        'Title',
+        validators=[InputRequired()]
+    )
+
+    property_type = SelectField(
+    'Property Type',
+    choices=[
+        ('Shared Apartment', 'Shared Apartment'),
+        ('Entire Apartment', 'Entire Apartment'),
+        ('Shared House', 'Shared House'),
+        ('Private Room', 'Private Room'),
+        ('Studio', 'Studio')
+    ],
+    validators=[InputRequired()]
+)
+
+    price = IntegerField(
+        'Price',
+        validators=[InputRequired()]
+    )
+
+    suburb = StringField(
+        'Suburb',
+        validators=[InputRequired()]
+    )
+
+    city = StringField(
+        'City',
+        validators=[InputRequired()]
+    )
+
+    postcode = StringField(
+        'Postcode',
+        validators=[InputRequired()]
+    )
+
+    bedrooms = IntegerField(
+        'Bedrooms',
+        validators=[InputRequired()]
+    )
+
+    bathrooms = IntegerField(
+        'Bathrooms',
+        validators=[InputRequired()]
+    )
+
+    occupants = IntegerField(
+        'Occupants',
+        validators=[InputRequired()]
+    )
+
+    image = FileField(
+        'Property Cover Image',
+        validators=[InputRequired()]
+    )
+
+    additional_images = MultipleFileField(
+        'Additional Images',
+        validators=[InputRequired()]
+    )
+
+    description = TextAreaField(
+        'Description'
+    )
+
+    submit = SubmitField(
+        'Save Property'
+    )

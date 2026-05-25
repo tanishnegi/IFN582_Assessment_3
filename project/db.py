@@ -333,3 +333,203 @@ def create_enquiry(property_id, buyer_id, form):
     ))
     mysql.connection.commit()
     cur.close()
+
+def add_property(form, seller_id, image_path):
+
+    cur = mysql.connection.cursor()
+
+    cur.execute("""
+        INSERT INTO properties
+        (
+            seller_id,
+            title,
+            property_type,
+            price,
+            suburb,
+            city,
+            postcode,
+            bedrooms,
+            bathrooms,
+            occupants,
+            image,
+            description
+        )
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    """, (
+        seller_id,
+        form.title.data,
+        form.property_type.data,
+        form.price.data,
+        form.suburb.data,
+        form.city.data,
+        form.postcode.data,
+        form.bedrooms.data,
+        form.bathrooms.data,
+        form.occupants.data,
+        image_path,
+        form.description.data
+    ))
+
+    mysql.connection.commit()
+    property_id = cur.lastrowid
+    cur.close()
+    return property_id
+
+def add_property_image(property_id, image_path, display_order):
+
+    cur = mysql.connection.cursor()
+
+    cur.execute("""
+        INSERT INTO property_images
+        (
+            property_id,
+            image,
+            display_order
+        )
+        VALUES (%s, %s, %s)
+    """, (
+        property_id,
+        image_path,
+        display_order
+    ))
+
+    mysql.connection.commit()
+
+    cur.close()
+
+def get_my_listings(user_id):
+
+    cur = mysql.connection.cursor()
+
+    cur.execute("""
+        SELECT *
+        FROM properties
+        WHERE seller_id = %s
+        ORDER BY created_at DESC
+    """, (user_id,))
+
+    properties = cur.fetchall()
+
+    cur.close()
+
+    return [
+        Property(
+            row['id'],
+            row['title'],
+            row['property_type'],
+            float(row['price']),
+            row['suburb'],
+            row['city'],
+            row['postcode'],
+            row['bedrooms'],
+            row['bathrooms'],
+            row['occupants'],
+            row['image'],
+            row['description'],
+            row['created_at']
+        )
+        for row in properties
+    ]
+
+def get_property_by_id(property_id):
+
+    cur = mysql.connection.cursor()
+
+    cur.execute("""
+        SELECT *
+        FROM properties
+        WHERE id = %s
+    """, (property_id,))
+
+    row = cur.fetchone()
+
+    cur.close()
+
+    if row:
+
+        return Property(
+            row['id'],
+            row['title'],
+            row['property_type'],
+            float(row['price']),
+            row['suburb'],
+            row['city'],
+            row['postcode'],
+            row['bedrooms'],
+            row['bathrooms'],
+            row['occupants'],
+            row['image'],
+            row['description'],
+            row['created_at']
+        )
+
+    return None
+
+def update_property(property_id, form, image_path):
+
+    cur = mysql.connection.cursor()
+
+    cur.execute("""
+        UPDATE properties
+        SET
+            title = %s,
+            property_type = %s,
+            price = %s,
+            suburb = %s,
+            city = %s,
+            postcode = %s,
+            bedrooms = %s,
+            bathrooms = %s,
+            occupants = %s,
+            image = %s,
+            description = %s
+        WHERE id = %s
+    """, (
+        form.title.data,
+        form.property_type.data,
+        form.price.data,
+        form.suburb.data,
+        form.city.data,
+        form.postcode.data,
+        form.bedrooms.data,
+        form.bathrooms.data,
+        form.occupants.data,
+        image_path,
+        form.description.data,
+        property_id
+    ))
+
+    mysql.connection.commit()
+
+    cur.close()
+
+def delete_additional_images(property_id):
+
+    cur = mysql.connection.cursor()
+
+    cur.execute("""
+        DELETE FROM property_images
+        WHERE property_id = %s
+    """, (property_id,))
+
+    mysql.connection.commit()
+
+    cur.close()
+
+def delete_property(property_id):
+
+    cur = mysql.connection.cursor()
+
+    cur.execute("""
+        DELETE FROM property_images
+        WHERE property_id = %s
+    """, (property_id,))
+
+    cur.execute("""
+        DELETE FROM properties
+        WHERE id = %s
+    """, (property_id,))
+
+    mysql.connection.commit()
+
+    cur.close()
