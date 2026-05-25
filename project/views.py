@@ -1,12 +1,40 @@
-<<<<<<< HEAD
-from flask import Blueprint, render_template, request, session, flash,redirect, url_for, abort, current_app
-from .db import get_properties, search_properties , create_user, user_exists, check_for_user,get_preferences,calculate_compatibility,save_user_preferences,get_user_preferences, get_property_details, create_enquiry, add_property, add_property_image, get_my_listings,delete_property, get_property_by_id, update_property, delete_additional_images
-from .forms import SearchForm, RegisterForm, LoginForm, EnquiryForm, PropertyForm
-=======
-from flask import Blueprint, render_template, request, session, flash,redirect, url_for, abort
-from .db import get_properties, search_properties , create_user, user_exists, check_for_user,get_preferences,calculate_compatibility,save_user_preferences,get_user_preferences, get_property_details, create_enquiry, add_bookmark, remove_bookmark, get_bookmarks_for_user, update_bookmark_notes
-from .forms import SearchForm, RegisterForm, LoginForm, EnquiryForm , BookmarkNotesForm
->>>>>>> 60643c6f7a8256484b5cfe4a3c5e111b9a40de3f
+from flask import Blueprint, render_template, request, session, flash, redirect, url_for, abort, current_app
+
+from .db import (
+    get_properties,
+    search_properties,
+    create_user,
+    user_exists,
+    check_for_user,
+    get_preferences,
+    calculate_compatibility,
+    save_user_preferences,
+    get_user_preferences,
+    get_property_details,
+    create_enquiry,
+    add_property,
+    add_property_image,
+    get_my_listings,
+    delete_property,
+    get_property_by_id,
+    update_property,
+    delete_additional_images,
+    add_bookmark,
+    remove_bookmark,
+    get_bookmarks_for_user,
+    update_bookmark_notes
+)
+
+from .forms import (
+    SearchForm,
+    RegisterForm,
+    LoginForm,
+    EnquiryForm,
+    PropertyForm,
+    BookmarkNotesForm
+)
+
+
 from hashlib import sha256
 import os
 from werkzeug.utils import secure_filename
