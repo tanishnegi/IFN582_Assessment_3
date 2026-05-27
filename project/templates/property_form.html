@@ -107,6 +107,21 @@
                                     <div class="invalid-feedback">{{ error }}</div>
                                     {% endfor %}
                                 </div>
+                                <div class="col-12">
+                                    {{ form.preferences.label(class="form-label") }}
+                                    <div class="d-flex flex-wrap gap-2">
+                                        {% for value, label in form.preferences.choices %}
+                                        <input type="checkbox" class="btn-check" name="{{ form.preferences.name }}"
+                                            value="{{ value }}" id="propertypref{{ value }}" {% if value in (form.preferences.data or []) %}checked{% endif %}>
+                                        <label for="propertypref{{ value }}" class="btn btn-outline-dark rounded-pill px-3">
+                                            {{ label }}
+                                        </label>
+                                        {% endfor %}
+                                    </div>
+                                    {% for error in form.preferences.errors %}
+                                    <div class="text-danger small mt-1">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
                             </div>
                             <div class="d-flex gap-2 mt-4">
                                 <button type="submit" class="btn btn-dark rounded-pill px-4">{{ submit_label }}</button>

@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms.fields import (
     StringField,
     SelectField,
+    SelectMultipleField,
     SubmitField,
     PasswordField,
     TextAreaField,
@@ -111,6 +112,7 @@ class PropertyForm(FlaskForm):
         places=8,
     )
     description = TextAreaField("Description", validators=[InputRequired()])
+    preferences = SelectMultipleField("Lifestyle preferences", coerce=int)
     submit = SubmitField("Save Listing")
 
 

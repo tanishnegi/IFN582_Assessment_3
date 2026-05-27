@@ -6,6 +6,7 @@ from .db import (
     user_exists,
     check_for_user,
     get_preferences,
+    get_property_preferences,
     calculate_compatibility,
     save_user_preferences,
     get_user_preferences,
@@ -35,6 +36,13 @@ from .forms import SearchForm, RegisterForm, LoginForm, EnquiryForm, AdminUserFo
 from hashlib import sha256
 
 bp = Blueprint('main', __name__)
+
+
+def set_property_preference_choices(form):
+    form.preferences.choices = [
+        (preference.id, preference.name)
+        for preference in get_preferences()
+    ]
 
 
 def require_login(*roles):
@@ -370,6 +378,7 @@ def create_property_listing():
         return access
 
     form = PropertyForm()
+    set_property_preference_choices(form)
     if request.method == 'POST' and form.validate_on_submit():
         create_property(form, session['user']['id'])
         flash("Property listing created successfully!", "success")
@@ -400,6 +409,9 @@ def edit_property_listing(property_id):
         abort(403)
 
     form = PropertyForm(obj=property)
+    set_property_preference_choices(form)
+    if request.method == 'GET':
+        form.preferences.data = get_property_preferences(property_id)
     if request.method == 'POST' and form.validate_on_submit():
         update_property(property_id, form)
         flash("Property listing updated successfully!", "success")

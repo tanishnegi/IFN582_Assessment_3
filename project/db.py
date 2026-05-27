@@ -399,6 +399,7 @@ def create_property(form, seller_id):
     ))
 
     property_id = cur.lastrowid
+    _save_property_preferences(cur, property_id, form.preferences.data)
     _ensure_fallback_property_assets(cur, property_id)
 
     mysql.connection.commit()
@@ -440,6 +441,7 @@ def update_property(property_id, form):
         property_id,
     ))
 
+    _save_property_preferences(cur, property_id, form.preferences.data)
     _ensure_fallback_property_assets(cur, property_id)
 
     mysql.connection.commit()
@@ -664,6 +666,33 @@ def get_preferences():
         )
         for row in preferences
     ]
+
+
+def get_property_preferences(property_id):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT preference_id
+        FROM property_preferences
+        WHERE property_id = %s
+    """, (property_id,))
+    preferences = cur.fetchall()
+    cur.close()
+    return [row['preference_id'] for row in preferences]
+
+
+def _save_property_preferences(cur, property_id, selected_preferences):
+    cur.execute("""
+        DELETE FROM property_preferences
+        WHERE property_id = %s
+    """, (property_id,))
+
+    for pref_id in selected_preferences or []:
+        cur.execute("""
+            INSERT INTO property_preferences
+            (property_id, preference_id)
+            VALUES (%s, %s)
+        """, (property_id, pref_id))
+
 
 def calculate_compatibility(property_id, user_id):
 
